@@ -32,6 +32,16 @@ def raise_if_handler_is_invalid(handler):
         raise InvalidHandlerError(handler)
 
 
+def raise_if_notifiacation_is_invalid(handler):
+    isfunc = inspect.isfunction(handler)
+    func = handler if isfunc else (handler.handle if hasattr(handler, 'handle') else None)
+    if not func or not inspect.isfunction(func):
+        raise InvalidHandlerError(func)
+    sign = inspect.signature(func)
+    params_l = len(sign.parameters.keys())
+    if params_l != (1 if isfunc else 2):
+        raise InvalidNotificationError(handler)
+
 def raise_if_behavior_is_invalid(behavior):
     isfunc = inspect.isfunction(behavior)
     func = behavior if isfunc else (behavior.handle if hasattr(behavior, 'handle') else None)
@@ -60,6 +70,15 @@ class InvalidHandlerError(Exception):
         super().__init__("Incorrect handler: '{}'. Handler must be a class, that contains 'handle' method with args:(self,request:SomeRequestType) \
             or must be a function with args:(request:SomeRequestType) \
              where 'request' is object of request class. See examples on git".format(handler))
+
+
+class InvalidNotificationError(Exception):
+    def __init__(self, handler):
+        self.handler = handler
+        super().__init__("Incorrect handler: '{}'. Handler must be a class, that contains 'handle' method with args:(self,request:SomeRequestType) \
+            or must be a function with args:(request:SomeRequestType) \
+             where 'request' is object of request class. See examples on git".format(handler))
+
 
 
 class InvalidBehaviorError(Exception):
