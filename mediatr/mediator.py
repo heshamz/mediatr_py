@@ -210,6 +210,12 @@ class Mediator:
         return beh_result
 
     @staticmethod
+    def clear():
+        __handlers__.clear()
+        __notifications__.clear()
+        __behaviors__.clear()
+
+    @staticmethod
     def register_handler(handler):
         """Append handler function or class to global handlers dictionary"""
         request_type = extract_request_type(handler, RequestType.HANDLER)
